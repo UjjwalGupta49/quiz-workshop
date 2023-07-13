@@ -48,6 +48,29 @@ export default function Home() {
   }, [router.query.quizId, wallet])
 
 
+  useEffect(() => {
+
+    if (!currentAccount) return
+    const run = async () => {
+      try {
+        const quizId = router.query.quizId;
+        const res = await getQuizAccount(wallet as NodeWallet, Number(quizId))
+        console.log("QUIZ ACCOUNT: ", res)
+        setCurrentAccount(res)
+      } catch (e) {
+        console.log(e)
+      }
+    }
+
+    const interval = setInterval(() => {
+      run()
+    }, 2000)
+
+    return () => clearInterval(interval)
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentAccount])
+
   const answerQuizQuestion = async (index: number) => {
     const newRes = [...userResponse, index + 1];
     localStorage.setItem("answers_left", JSON.stringify(newRes))
